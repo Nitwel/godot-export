@@ -65,6 +65,7 @@ inputs:
     default: false
     required: false
   version:
+    description: The version to export the project as.
     default: 'v0.0.1'
     required: false
 outputs:
