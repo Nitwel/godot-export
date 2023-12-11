@@ -7,6 +7,12 @@ export interface ExportPreset {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   export_path: string;
   platform: string;
+  options: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    'version/code': string;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    'version/name': string;
+  };
 }
 
 export type BuildResult = {

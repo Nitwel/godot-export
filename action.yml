@@ -57,7 +57,16 @@ inputs:
     description: Export project files as a .pck file.
     default: false
     required: false
-
+  filter_exports:
+    description: Only run certain exports.
+    required: false
+  production:
+    description: If "true" Godot will export in production mode.
+    default: false
+    required: false
+  version:
+    default: 'v0.0.1'
+    required: false
 outputs:
   build_directory:
     description: The directory containing exports prior to archiving (if applicable).

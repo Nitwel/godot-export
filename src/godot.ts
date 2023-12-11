@@ -22,6 +22,9 @@ import {
   USE_GODOT_3,
   GODOT_EXPORT_TEMPLATES_PATH,
   CACHE_ACTIVE,
+  FILTER_EXPORTS,
+  PRODUCTION,
+  EXPORT_VERSION,
 } from './constants';
 
 const GODOT_EXECUTABLE = 'godot_executable';
@@ -53,6 +56,10 @@ async function exportBuilds(): Promise<BuildResult[]> {
 
   if (!USE_GODOT_3) {
     await importProject();
+  }
+
+  if (PRODUCTION) {
+    await configureProduction();
   }
 
   core.startGroup('✨ Export binaries');
@@ -265,6 +272,30 @@ async function doExport(): Promise<BuildResult[]> {
   return buildResults;
 }
 
+async function configureProduction(): Promise<void> {
+  core.startGroup('📝 Appending production settings');
+  const projectPath = path.resolve(RELATIVE_PROJECT_PATH);
+
+  await exec(`versioncode=$(eval "git tag | grep - v "test" | wc - l")`);
+
+  const versionCode = process.env['versioncode'] || '0';
+
+  const exportPresets = getExportPresets().map(preset => {
+    preset.options['version/name'] = EXPORT_VERSION;
+    preset.options['version/code'] = versionCode;
+
+    return preset;
+  });
+
+  const exportFilePath = path.join(projectPath, 'export_presets.cfg');
+
+  const iniStr = ini.encode({ preset: exportPresets });
+
+  fs.writeFileSync(exportFilePath, iniStr);
+
+  core.endGroup();
+}
+
 function configureWindowsExport(): void {
   core.startGroup('📝 Appending Wine editor settings');
   const rceditPath = path.join(__dirname, 'rcedit-x64.exe');
@@ -305,7 +336,7 @@ function findGodotExecutablePath(basePath: string): string | undefined {
 }
 
 function getExportPresets(): ExportPreset[] {
-  const exportPrests: ExportPreset[] = [];
+  const exportPresets: ExportPreset[] = [];
   const projectPath = path.resolve(RELATIVE_PROJECT_PATH);
 
   if (!hasExportPresets()) {
@@ -315,16 +346,21 @@ function getExportPresets(): ExportPreset[] {
   const exportFilePath = path.join(projectPath, 'export_presets.cfg');
   const iniStr = fs.readFileSync(exportFilePath, { encoding: 'utf8' });
   const presets = ini.decode(iniStr) as ExportPresets;
+  const whitelist = FILTER_EXPORTS.split(',').map(x => x.trim());
 
   if (presets?.preset) {
     for (const key in presets.preset) {
-      exportPrests.push(presets.preset[key]);
+      const preset = presets.preset[key];
+
+      if (whitelist.includes(preset.name) === false) continue;
+
+      exportPresets.push(preset);
     }
   } else {
     core.warning(`No presets found in export_presets.cfg at ${projectPath}`);
   }
 
-  return exportPrests;
+  return exportPresets;
 }
 
 async function addEditorSettings(): Promise<void> {
