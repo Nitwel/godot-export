@@ -23,8 +23,6 @@ import {
   GODOT_EXPORT_TEMPLATES_PATH,
   CACHE_ACTIVE,
   FILTER_EXPORTS,
-  PRODUCTION,
-  EXPORT_VERSION,
 } from './constants';
 
 const GODOT_EXECUTABLE = 'godot_executable';
@@ -56,10 +54,6 @@ async function exportBuilds(): Promise<BuildResult[]> {
 
   if (!USE_GODOT_3) {
     await importProject();
-  }
-
-  if (PRODUCTION) {
-    await configureProduction();
   }
 
   core.startGroup('✨ Export binaries');
@@ -270,30 +264,6 @@ async function doExport(): Promise<BuildResult[]> {
   }
 
   return buildResults;
-}
-
-async function configureProduction(): Promise<void> {
-  core.startGroup('📝 Appending production settings');
-  const projectPath = path.resolve(RELATIVE_PROJECT_PATH);
-
-  await exec(`sed -i s/singleInstancePerTask/singleTask/g ./android/build/AndroidManifest.xml`);
-
-  const versionCode = process.env['versioncode'] || '0';
-
-  const exportPresets = getExportPresets().map(preset => {
-    preset.options['version/name'] = EXPORT_VERSION;
-    preset.options['version/code'] = versionCode;
-
-    return preset;
-  });
-
-  const exportFilePath = path.join(projectPath, 'export_presets.cfg');
-
-  const iniStr = ini.encode({ preset: exportPresets });
-
-  fs.writeFileSync(exportFilePath, iniStr);
-
-  core.endGroup();
 }
 
 function configureWindowsExport(): void {

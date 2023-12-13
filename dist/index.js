@@ -82547,8 +82547,6 @@ const ARCHIVE_ROOT_FOLDER = core.getInput('archive_root_folder') === 'true';
 const USE_GODOT_3 = core.getInput('use_godot_3') === 'true';
 const EXPORT_PACK_ONLY = core.getInput('export_as_pack') === 'true';
 const FILTER_EXPORTS = core.getInput('filter_exports');
-const PRODUCTION = core.getInput('production') === 'true';
-const EXPORT_VERSION = core.getInput('version');
 const GODOT_WORKING_PATH = external_path_default().resolve(external_path_default().join(external_os_.homedir(), '/.local/share/godot'));
 const GODOT_EXPORT_TEMPLATES_PATH = external_path_default().resolve(external_path_default().join(external_os_.homedir(), process.platform === 'darwin'
     ? 'Library/Application Support/Godot/export_templates'
@@ -82591,9 +82589,6 @@ async function exportBuilds() {
     }
     if (!USE_GODOT_3) {
         await importProject();
-    }
-    if (PRODUCTION) {
-        await configureProduction();
     }
     core.startGroup('✨ Export binaries');
     const results = await doExport();
@@ -82768,21 +82763,6 @@ async function doExport() {
         });
     }
     return buildResults;
-}
-async function configureProduction() {
-    core.startGroup('📝 Appending production settings');
-    const projectPath = external_path_.resolve(RELATIVE_PROJECT_PATH);
-    await (0,exec.exec)(`sed -i s/singleInstancePerTask/singleTask/g ./android/build/AndroidManifest.xml`);
-    const versionCode = process.env['versioncode'] || '0';
-    const exportPresets = getExportPresets().map(preset => {
-        preset.options['version/name'] = EXPORT_VERSION;
-        preset.options['version/code'] = versionCode;
-        return preset;
-    });
-    const exportFilePath = external_path_.join(projectPath, 'export_presets.cfg');
-    const iniStr = ini.encode({ preset: exportPresets });
-    external_fs_.writeFileSync(exportFilePath, iniStr);
-    core.endGroup();
 }
 function configureWindowsExport() {
     core.startGroup('📝 Appending Wine editor settings');

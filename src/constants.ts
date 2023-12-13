@@ -17,8 +17,6 @@ const ARCHIVE_ROOT_FOLDER = core.getInput('archive_root_folder') === 'true';
 const USE_GODOT_3 = core.getInput('use_godot_3') === 'true';
 const EXPORT_PACK_ONLY = core.getInput('export_as_pack') === 'true';
 const FILTER_EXPORTS = core.getInput('filter_exports');
-const PRODUCTION = core.getInput('production') === 'true';
-const EXPORT_VERSION = core.getInput('version');
 
 const GODOT_WORKING_PATH = path.resolve(path.join(os.homedir(), '/.local/share/godot'));
 const GODOT_EXPORT_TEMPLATES_PATH = path.resolve(
@@ -58,6 +56,4 @@ export {
   USE_PRESET_EXPORT_PATH,
   WINE_PATH,
   FILTER_EXPORTS,
-  PRODUCTION,
-  EXPORT_VERSION,
 };

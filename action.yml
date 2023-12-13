@@ -60,14 +60,6 @@ inputs:
   filter_exports:
     description: Only run certain exports.
     required: false
-  production:
-    description: If "true" Godot will export in production mode.
-    default: false
-    required: false
-  version:
-    description: The version to export the project as.
-    default: 'v0.0.1'
-    required: false
 outputs:
   build_directory:
     description: The directory containing exports prior to archiving (if applicable).
