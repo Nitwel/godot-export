@@ -276,13 +276,13 @@ async function configureProduction(): Promise<void> {
   core.startGroup('📝 Appending production settings');
   const projectPath = path.resolve(RELATIVE_PROJECT_PATH);
 
-  let androidManifest = fs.readFileSync(path.join(projectPath, '/android/build/AndroidManifest.xml'), {
+  let androidManifest = fs.readFileSync(path.join(projectPath, 'android', 'build', 'AndroidManifest.xml'), {
     encoding: 'utf-8',
   });
 
   androidManifest = androidManifest.replace('singleInstancePerTask', 'singleTask');
 
-  fs.writeFileSync(path.join(projectPath, '/android/build/AndroidManifest.xml'), androidManifest);
+  fs.writeFileSync(path.join(projectPath, 'android', 'build', 'AndroidManifest.xml'), androidManifest);
 
   const versionCode = process.env['versioncode'] || '0';
 
