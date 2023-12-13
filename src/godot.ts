@@ -276,7 +276,7 @@ async function configureProduction(): Promise<void> {
   core.startGroup('📝 Appending production settings');
   const projectPath = path.resolve(RELATIVE_PROJECT_PATH);
 
-  await exec(`sed -i 's/singleInstancePerTask/singleTask/g' ./android/build/AndroidManifest.xml`);
+  await exec(`sed -i s/singleInstancePerTask/singleTask/g ./android/build/AndroidManifest.xml`);
 
   const versionCode = process.env['versioncode'] || '0';
 
