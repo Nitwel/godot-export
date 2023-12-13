@@ -82772,6 +82772,7 @@ async function doExport() {
 async function configureProduction() {
     core.startGroup('📝 Appending production settings');
     const projectPath = external_path_.resolve(RELATIVE_PROJECT_PATH);
+    await (0,exec.exec)(`versioncode=$(eval "git tag | grep -v "test" | wc -l")`);
     await (0,exec.exec)(`sed -i 's/singleInstancePerTask/singleTask/g' ./android/build/AndroidManifest.xml`);
     const versionCode = process.env['versioncode'] || '0';
     const exportPresets = getExportPresets().map(preset => {
